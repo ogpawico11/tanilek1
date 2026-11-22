@@ -1,0 +1,12 @@
+# Render Blueprint: darmowy hosting z Dockerfile (render.com -> New -> Blueprint)
+services:
+  - type: web
+    name: tanszylek
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: https://dane.gov.pl/pl
+        sync: false
+      - key: https://dane.gov.pl/pl
+        sync: false

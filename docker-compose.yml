@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      PORT: "8000"
+      LEKI_URL: ${LEKI_URL:-}
+      APTEKI_URL: ${APTEKI_URL:-}
+      DANE_API_KEY: ${DANE_API_KEY:-}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

@@ -1,0 +1,6 @@
+identyfikator_apteki;nazwa_apteki;stan_apteki;rodzaj_apteki;wojewodztwo;typ_ulicy;nazwa_ulicy;numer_budynku;numer_lokalu;miejscowosc;kod_pocztowy;telefon;wlasciciel_miejscowosc
+1;APTEKA POD OR?EM;AKTYWNA;APTEKA OGÓLNODOST?PNA;MAZOWIECKIE;ul.;Marsza?kowska;10;2;Warszawa;00-001;22 111 22 33;Kraków
+2;;AKTYWNA;PUNKT APTECZNY;?ódzkie;pl.;Plac Wolno?ci;8;;?ÓD?;90-001;42 777 88 99;Kraków
+3;Apteka Szpitalna;AKTYWNA;APTEKA SZPITALNA;mazowieckie;ul.;Szpitalna;1;;Warszawa;00-002;;Kraków
+4;Apteka Zamkni?ta;NIEAKTYWNA;APTEKA OGÓLNODOST?PNA;mazowieckie;ul.;Zamkni?ta;3;;Warszawa;00-003;;Kraków
+5;Apteka Wiejska;AKTYWNA;APTEKA OGÓLNODOST?PNA;?wi?tokrzyskie;;;147;;Nowa S?upia;26-006;41 317 71 50;Kraków

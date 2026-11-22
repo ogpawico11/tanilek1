@@ -1,0 +1,20 @@
+[project]
+name = "tanszylek"
+version = "0.2.0"
+description = "Wyszukiwarka leków refundowanych, zamienników i aptek na danych z dane.gov.pl"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["duckdb>=1.1", "fastapi>=0.115", "uvicorn[standard]>=0.30", "openpyxl>=3.1"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+# jawny zestaw reguł: wynik CI nie zależy od domyślnych reguł nowszych wersji ruffa
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

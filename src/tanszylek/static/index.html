@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tanszylek</title>
+<style>
+:root{--paper:#fff8e7;--ink:#2b2a33;--mut:#6b6874;--green:#7fd8a6;--yellow:#ffd966;--pink:#ffb3c1;--card:#fffdf6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 "Trebuchet MS",Verdana,Tahoma,sans-serif;
+  background-image:radial-gradient(#e9dfc0 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:780px;margin:0 auto;padding:18px 16px}
+header{padding:26px 0 6px;position:relative}
+h1{margin:0;font-size:2.4rem;font-family:Georgia,"Times New Roman",serif;display:inline-block}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--yellow) 62%)}
+.sticker{display:inline-block;background:var(--pink);border:2px solid var(--ink);border-radius:8px;padding:2px 10px;font-size:.8rem;font-weight:bold;transform:rotate(-4deg);margin-left:10px;vertical-align:top;box-shadow:2px 2px 0 var(--ink)}
+.lead{margin:.6rem 0 0;color:var(--mut);max-width:34em}
+.demo{background:var(--yellow);border:2px dashed var(--ink);border-radius:10px;padding:10px 14px;margin:14px 0;font-weight:bold}
+[role=tablist]{display:flex;gap:10px;margin:22px 0 14px}
+[role=tab]{flex:1;padding:11px;font:inherit;font-weight:bold;color:var(--ink);background:var(--card);border:2px solid var(--ink);border-radius:10px;cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+[role=tab][aria-selected=true]{background:var(--green);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+label{display:block;font-weight:bold;margin-bottom:6px}
+label.opt{margin-top:12px;font-weight:normal;color:var(--mut)}
+input[type=search]{width:100%;padding:13px 14px;font:inherit;color:var(--ink);background:#fff;border:2px solid var(--ink);border-radius:10px;box-shadow:3px 3px 0 var(--ink)}
+:focus-visible{outline:3px solid #3b82f6;outline-offset:2px}
+.status{color:var(--mut);margin:14px 2px;min-height:1.6em}
+.list{display:grid;gap:14px;padding:0;margin:0;list-style:none}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:13px 15px;box-shadow:4px 4px 0 var(--ink);display:grid;gap:8px}
+.card:nth-child(even){transform:rotate(.25deg)}
+.card.best{background:#e6f9ee}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.name{font-weight:bold;overflow-wrap:anywhere}
+.sub{color:var(--mut);font-size:.9rem}
+.price{text-align:right;white-space:nowrap}
+.price strong{display:block;font-size:1.3rem;font-family:Georgia,serif}
+.price small{color:var(--mut);font-size:.78rem}
+.price.cat strong{font-size:1.05rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.78rem;padding:1px 9px;border:2px solid var(--ink);border-radius:999px;background:var(--green);font-weight:bold;max-width:100%;overflow-wrap:anywhere}
+.tag.warn{background:var(--pink)}
+.card.retired{opacity:.72}
+.tag.neutral{background:#fff;font-weight:normal}
+.btn{justify-self:start;padding:7px 13px;font:inherit;font-weight:bold;color:var(--ink);background:var(--yellow);border:2px solid var(--ink);border-radius:8px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn[aria-expanded=true]{background:#fff}
+.sub-panel{border-top:2px dotted var(--ink);padding-top:10px;display:grid;gap:10px}
+.sub-panel h3{margin:0;font-size:1rem}
+a.tel{color:var(--ink);font-weight:bold}
+.note{color:var(--mut);font-size:.85rem;margin:0}
+footer{color:var(--mut);font-size:.85rem;padding:22px 0 40px;margin-top:26px;border-top:2px dotted var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>💊 <em>tanszylek</em></h1><span class="sticker">dane z dane.gov.pl</span>
+  <p class="lead">Dostałeś receptę? Sprawdź, czy ten sam lek nie kosztuje mniej pod inną nazwą. Poszukamy też apteki w Twoim mieście.</p>
+</header>
+
+<div id="demo" class="demo" hidden>Tryb DEMO: to dane przykładowe, nie używaj ich do decyzji zdrowotnych.</div>
+
+<div role="tablist" aria-label="Wybierz wyszukiwarkę">
+  <button role="tab" id="t-l" aria-selected="true" aria-controls="p-l"> Leki</button>
+  <button role="tab" id="t-a" aria-selected="false" aria-controls="p-a"> Apteki</button>
+</div>
+
+<main>
+  <section id="p-l" role="tabpanel" aria-labelledby="t-l">
+    <label for="ql">Jak nazywa się lek (albo substancja czynna)?</label>
+    <input id="ql" type="search" placeholder="np. metformina albo Siofor" autocomplete="off" autofocus>
+    <div id="sl" class="status" role="status" aria-live="polite">Wpisz przynajmniej 2 litery </div>
+    <ul id="rl" class="list"></ul>
+  </section>
+
+  <section id="p-a" role="tabpanel" aria-labelledby="t-a" hidden>
+    <label for="qa">W jakim mieście szukasz apteki?</label>
+    <input id="qa" type="search" placeholder="np. Łódź" autocomplete="off">
+    <label for="qs" class="opt">Ulica lub nazwa apteki (opcjonalnie)</label>
+    <input id="qs" type="search" placeholder="np. Piotrkowska" autocomplete="off">
+    <div id="sa" class="status" role="status" aria-live="polite">Wpisz nazwę miejscowości.</div>
+    <ul id="ra" class="list"></ul>
+  </section>
+</main>
+
+<footer>
+  <p id="meta">Źródło danych: dane.gov.pl.</p>
+  <p>Zawsze skonsultuj z lekarzem lub farmaceutą.</p>
+</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const zl = v => v == null ? '–' : Number(v).toFixed(2).replace('.', ',') + ' zł';
+const debounce = (f, ms = 250) => { let h; return (...a) => { clearTimeout(h); h = setTimeout(() => f(...a), ms); }; };
+async function getJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(r.status); return r.json(); }
+
+function selectTab(which) {
+  for (const k of ['l', 'a']) {
+    $('t-' + k).setAttribute('aria-selected', String(k === which));
+    $('p-' + k).hidden = k !== which;
+  }
+  $(which === 'l' ? 'ql' : 'qa').focus();
+}
+$('t-l').onclick = () => selectTab('l');
+$('t-a').onclick = () => selectTab('a');
+
+const cache = new Map();
+const hasPrice = r => r.cena != null || r.doplata != null;
+const CAT_HINT = { OTC: 'bez recepty', Rp: 'na receptę', Rpz: 'na receptę (zastrzeżony)', Rpw: 'na receptę (wydawanie)' };
+const MAX_PACKS = 12;
+function lekCard(r, { best = false, base = null, sub = false } = {}) {
+  cache.set(r.id, r);
+  const retired = r.aktywne === 0;
+  const tags = [];
+  if (retired) tags.push('<span class="tag warn">wycofany z obrotu</span>');
+  if (best) tags.push('<span class="tag">🏆 najtańszy zamiennik</span>');
+  if (base && hasPrice(r) && hasPrice(base)) {
+    const dd = (base.doplata ?? 0) - (r.doplata ?? 0), dc = (base.cena ?? 0) - (r.cena ?? 0);
+    if (dd > 0.004) tags.push(`<span class="tag"> dopłata niższa o ${zl(dd)}</span>`);
+    else if (dc > 0.004) tags.push(`<span class="tag"> cena niższa o ${zl(dc)}</span>`);
+  }
+  if (r.limit_ceny != null) tags.push(`<span class="tag neutral">limit ${zl(r.limit_ceny)}</span>`);
+  if (r.opakowanie) tags.push(`<span class="tag neutral">${esc(r.opakowanie)}</span>`);
+  const packs = r.opakowania || [];
+  packs.slice(0, MAX_PACKS).forEach(p =>
+    tags.push(`<span class="tag neutral" title="${esc([p.ean && 'EAN ' + p.ean, p.kat].filter(Boolean).join(' · '))}">${esc(p.opis || p.ean)}</span>`));
+  if (packs.length > MAX_PACKS) tags.push(`<span class="tag neutral">+${packs.length - MAX_PACKS} więcej</span>`);
+  const dose = r.dawka && !(r.substancja || '').includes(r.dawka) ? r.dawka : '';
+  const form = [r.postac, dose].filter(Boolean).join(' · ');
+  const subline = [r.substancja, form].filter(Boolean).join(' — ') || 'brak informacji o substancji';
+  const maker = r.podmiot ? `<div class="sub"> ${esc(r.podmiot)}</div>` : '';
+  const old = r.wycofane > 0 && !retired ? `<div class="sub">Wycofane opakowania: ${r.wycofane}</div>` : '';
+  const right = hasPrice(r)
+    ? `<div class="price"><strong>${zl(r.cena)}</strong><small>${r.doplata != null ? 'dopłata ponad limit ' + zl(r.doplata) : 'cena detaliczna'}</small></div>`
+    : r.kategoria
+      ? `<div class="price cat"><strong>${esc(r.kategoria)}</strong><small>${esc(CAT_HINT[r.kategoria] ?? '')}</small></div>`
+      : '';
+  return `<li class="card${best ? ' best' : ''}${retired ? ' retired' : ''}" data-id="${r.id}">
+    <div class="top">
+      <div><div class="name">${esc(r.nazwa)}</div><div class="sub">${esc(subline)}</div>${maker}</div>
+      ${right}
+    </div>
+    ${tags.length ? `<div class="tags">${tags.join('')}</div>` : ''}${old}
+    ${!sub ? `<button class="btn" aria-expanded="false" data-zam="${r.id}">Pokaż zamienniki</button>` : ''}
+  </li>`;
+}
+
+let seqL = 0, seqA = 0;  // numer zapytania: wolniejsza, starsza odpowiedź nie nadpisze nowszej
+const runLeki = debounce(async () => {
+  const my = ++seqL;
+  const q = $('ql').value.trim();
+  const list = $('rl'), st = $('sl');
+  if (q.length < 2) { list.innerHTML = ''; st.textContent = 'Wpisz przynajmniej 2 litery'; return; }
+  st.textContent = 'Szukam… ';
+  try {
+    const d = await getJSON('/api/leki?q=' + encodeURIComponent(q));
+    if (my !== seqL) return;
+    list.innerHTML = d.map(r => lekCard(r)).join('');
+    st.textContent = d.length ? `Znaleziono: ${d.length}${d.length >= 50 ? '+ (pokazuję 50 pierwszych wyników)' : ''}` : 'Nic nie znalazłem. Spróbuj innej nazwy albo nazwy substancji.';
+  } catch { if (my === seqL) st.textContent = 'Coś poszło nie tak. Spróbuj jeszcze raz za chwilę.'; }
+});
+$('ql').addEventListener('input', runLeki);
+
+$('rl').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-zam]');
+  if (!btn) return;
+  const card = btn.closest('.card');
+  const old = card.querySelector('.sub-panel');
+  if (old) { old.remove(); btn.setAttribute('aria-expanded', 'false'); btn.textContent = 'Pokaż zamienniki'; return; }
+  btn.textContent = 'Ładuję…';
+  try {
+    const id = Number(btn.dataset.zam), base = cache.get(id) ?? null;
+    const d = await getJSON(`/api/leki/${id}/zamienniki`);
+    const priced = d.some(hasPrice);
+    const cheaper = r => priced && base && ((r.doplata ?? 0) < (base.doplata ?? 0) || (r.cena ?? 0) < (base.cena ?? 0));
+    const panel = document.createElement('div');
+    panel.className = 'sub-panel';
+    panel.innerHTML = `<h3>Zamienniki (ta sama substancja, dawka i postać${priced ? '; od najniższej dopłaty i ceny' : ''})</h3>` +
+      (d.length ? `<ul class="list">${d.map((r, i) => lekCard(r, { best: i === 0 && cheaper(r), base, sub: true })).join('')}</ul>` : '<p class="sub">Nie znaleziono zamienników w tym zbiorze danych.</p>') +
+      (priced
+        ? '<p class="note">Dopłata = cena detaliczna powyżej limitu refundacji. Poziom odpłatności i dokładną kwotę potwierdzi farmaceuta.</p>'
+        : '<p class="note">Ten zbiór (rejestr produktów leczniczych) nie zawiera cen ani refundacji. Pokazano tylko produkty z aktywnymi opakowaniami; cenę poda apteka.</p>');
+    card.appendChild(panel);
+    btn.setAttribute('aria-expanded', 'true');
+    btn.textContent = 'Ukryj zamienniki';
+  } catch { btn.textContent = 'Błąd, spróbuj ponownie'; }
+});
+
+const runApteki = debounce(async () => {
+  const my = ++seqA;
+  const q = $('qa').value.trim(), street = $('qs').value.trim();
+  const list = $('ra'), st = $('sa');
+  if (q.length < 2) { list.innerHTML = ''; st.textContent = 'Wpisz nazwę miejscowości.'; return; }
+  st.textContent = 'Szukam… ';
+  try {
+    const d = await getJSON('/api/apteki?miasto=' + encodeURIComponent(q) + (street ? '&q=' + encodeURIComponent(street) : ''));
+    if (my !== seqA) return;
+    list.innerHTML = d.map(r => {
+      const addr = [r.ulica, [r.kod, r.miejscowosc].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      const tel = r.telefon ? `<a class="tel" href="tel:${esc(String(r.telefon).split(',')[0].replace(/[^\d+]/g, ''))}">${esc(r.telefon)}</a>` : '';
+      const hours = r.godziny ? `<div class="sub"> ${esc(r.godziny)}</div>` : '';
+      return `<li class="card"><div class="name">${esc(r.nazwa) || 'Apteka'}</div><div class="sub">${esc(addr)}</div>${hours}${tel}</li>`;
+    }).join('');
+    st.textContent = d.length ? `Znaleziono: ${d.length}${d.length >= 50 ? '+ (pokazuję pierwsze 50, dopisz ulicę, żeby zawęzić)' : ''}` : 'Nic tu nie ma. Sprawdź, czy dobrze wpisałeś miasto.';
+  } catch { if (my === seqA) st.textContent = 'Coś poszło nie tak. Spróbuj jeszcze raz za chwilę.'; }
+});
+$('qa').addEventListener('input', runApteki);
+$('qs').addEventListener('input', runApteki);
+
+getJSON('/api/meta').then(m => {
+  $('demo').hidden = !m.demo;
+  const when = m.built_at ? ` · dane przetworzone ${m.built_at.slice(0, 10)}` : '';
+  $('meta').textContent = `Źródło danych: ${m.zrodlo} · ${m.leki.toLocaleString('pl-PL')} leków · ${m.apteki.toLocaleString('pl-PL')} aktywnych aptek${when}.`;
+}).catch(() => {});
+</script>
+</body>
+</html>
